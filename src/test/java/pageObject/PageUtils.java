@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 //import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 
 import org.openqa.selenium.By;
@@ -18,9 +19,11 @@ import org.testng.Assert;
 
 import supporter.Baseclass;
 import supporter.GenericMethod;
+import supporter.XLSReader;
 
 public class PageUtils extends Baseclass {
 	static WebElement element;
+	public static XLSReader xls = new XLSReader("src/main/resources/data/BrokenLinks.xlsx");
 
 	public PageUtils(WebDriver driver) {
 		super(driver);
@@ -78,56 +81,69 @@ public class PageUtils extends Baseclass {
 		}
 	}
 
-	public static void verifyBrokenLinks() {
-		// Finding all the available links on webpage
-		List<WebElement> links = driver.findElements(By.tagName("a"));
+	public static void verifyBrokenLinks(String sheetName) {
+		List<WebElement> links = driver.findElements(By.xpath("//a"));
+		Iterator<WebElement> it = links.iterator();
+		int rowIndex = 2;
+		while (it.hasNext()) {
+			WebElement we = it.next();
+			String url = we.getDomAttribute("href");
 
-		// Iterating each link and checking the response status
-		for (WebElement link : links) {
-//		String url = link.getAttribute("href");
-			String url = link.getDomAttribute("href");
-			verifyLink(url);
-		}
-
-	}
-
-	public static void verifyLink(String url) {
-		try {
-			URL link = new URL(url);
-			HttpURLConnection httpURLConnection = (HttpURLConnection) link.openConnection();
-			httpURLConnection.setConnectTimeout(3000); // Set connection timeout to 3 seconds
-			httpURLConnection.connect();
-
-			if (httpURLConnection.getResponseCode() == 200) {
-				System.out.println(url + " - " + httpURLConnection.getResponseMessage());
-			} else {
-				System.err.println(url + " - " + httpURLConnection.getResponseMessage() + " - " + "is a broken link");
+			if (url == null || url.isEmpty() || url.contains("apple.com") || url.startsWith("javascript:") || url.startsWith("#")) {
+				System.out.println("Skipping empty or invalid URL");
+				continue;
 			}
-		} catch (Exception e) {
-			System.out.println(url + " - " + "is a broken link");
+
+			int respCode = verifyLink(url);
+
+			if (respCode >= 400) {
+				System.out.println(url + " is broken. Status Code: " + respCode);
+			} else {
+				System.out.println(url + " is working. Status Code: " + respCode);
+			}
+
+			// Set URL and Status Code in Excel
+			xls.setCellData(sheetName, "URL", rowIndex, url);
+			xls.setCellData(sheetName, "Status Code", rowIndex, String.valueOf(respCode));
+			rowIndex++;
 		}
 	}
 
+	public static int verifyLink(String url) {
+		int respCode = -1;
+		try {
+			HttpURLConnection huc = (HttpURLConnection) (new URL(url).openConnection());
+			huc.setRequestMethod("HEAD");
+			huc.connect();
+			respCode = huc.getResponseCode();
+			huc.disconnect();
+		} catch (Exception e) {
+			System.out.println("Error checking URL: " + url);
+		}
+		return respCode;
+	}
 
 	public static void verifyBrokenImages() {
-        try {
-            int iBrokenImageCount = 0;
-            List<WebElement> image_list = driver.findElements(By.xpath("//div[@class='inventory_item_img']//img"));
-            System.out.println("The page under test has " + image_list.size() + " images");
-            for (WebElement img : image_list) {
-                if (img != null) {
-                    String src = img.getDomProperty("src");
-                    if (isImageBroken(src) || (img.getDomProperty("naturalWidth").equals("0") && img.getDomProperty("naturalHeight").equals("0"))) {
-                        System.err.println(img.getDomProperty("outerHTML") + " is broken.");
-                        iBrokenImageCount++;
-                    }
-                }
-            }
-            System.out.println("The page has " + iBrokenImageCount + " broken images");
-        } catch (Exception e) {
-            System.err.println("Test is failed due to : " + e.getMessage());
-        }
-    }
+		try {
+			int iBrokenImageCount = 0;
+			List<WebElement> image_list = driver.findElements(By.xpath("//div[@class='inventory_item_img']//img"));
+			System.out.println("The page under test has " + image_list.size() + " images");
+			for (WebElement img : image_list) {
+				if (img != null) {
+					String src = img.getDomProperty("src");
+					if (isImageBroken(src) || (img.getDomProperty("naturalWidth").equals("0")
+							&& img.getDomProperty("naturalHeight").equals("0"))) {
+						System.err.println(img.getDomProperty("outerHTML") + " is broken.");
+						iBrokenImageCount++;
+					}
+				}
+			}
+			System.out.println("The page has " + iBrokenImageCount + " broken images");
+		} catch (Exception e) {
+			System.err.println("Test is failed due to : " + e.getMessage());
+		}
+	}
+
 	private static boolean isImageBroken(String imageUrl) {
 		try {
 			HttpURLConnection connection = (HttpURLConnection) new URL(imageUrl).openConnection();
@@ -139,7 +155,7 @@ public class PageUtils extends Baseclass {
 			int responseCode = connection.getResponseCode();
 			return responseCode == 404 || responseCode >= 400;
 		} catch (IOException e) {
-			return true; 
+			return true;
 		}
 	}
 

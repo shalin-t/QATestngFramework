@@ -16,6 +16,7 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -28,6 +29,7 @@ public class GenericMethod {
 
 	/**
 	 * Takes screenshot
+	 * 
 	 * @param driver
 	 * @param ss
 	 * @throws Exception
@@ -45,6 +47,7 @@ public class GenericMethod {
 
 	/**
 	 * Takes screenshot
+	 * 
 	 * @param filename
 	 * @throws Exception
 	 */
@@ -61,15 +64,16 @@ public class GenericMethod {
 
 	/**
 	 * Gets the date and time
+	 * 
 	 * @return timestamp
 	 */
 	public static String GetTimeStampValue() {
 		return new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
 	}
 
-	
 	/**
 	 * Opens the web browser and navigates to URL.
+	 * 
 	 * @return WebDriver
 	 * @throws Exception
 	 */
@@ -91,12 +95,22 @@ public class GenericMethod {
 			System.out.println("Testing on : " + sBrowserName + " Browser.");
 			if (sBrowserName == null || sBrowserName.isEmpty()) {
 				throw new Exception("BrowserType is not specified in config.properties");
-			} else if (sBrowserName.equals("Mozilla")) {
+			} else if (sBrowserName.toLowerCase().equals("firefox")) {
 				driver = new FirefoxDriver();
-			} else if (sBrowserName.equals("Chrome")) {
+			} else if (sBrowserName.toLowerCase().equals("chrome")) {
+				ChromeOptions options = new ChromeOptions();
+				options.addArguments("--disable-notifications");
+				options.setAcceptInsecureCerts(true); // Accept insecure certificates
 //				WebDriverManager.chromedriver().setup();
 				System.setProperty("webdriver.chrome.driver", "drivers\\chromedriver.exe");
-				driver = new ChromeDriver();
+				driver = new ChromeDriver(options);
+			} else {
+				ChromeOptions options = new ChromeOptions();
+				options.addArguments("--headless");
+				options.addArguments("--disable-gpu");
+				options.addArguments("--no-sandbox");
+				options.addArguments("--remote-allow-origins=*");
+				driver = new ChromeDriver(options);
 			}
 			driver.manage().window().maximize();
 			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
@@ -110,6 +124,7 @@ public class GenericMethod {
 
 	/**
 	 * Waits for web element until condition.
+	 * 
 	 * @param element
 	 * @return
 	 */
@@ -159,6 +174,7 @@ public class GenericMethod {
 
 	/**
 	 * Highlights web element on web page.
+	 * 
 	 * @param element
 	 * @throws Exception
 	 */

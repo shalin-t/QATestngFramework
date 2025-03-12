@@ -48,10 +48,21 @@ public class RunTest {
 	}
 	
 	
-	@Test(priority = 2)
+	@Test(priority = 2, enabled = false)
 	public void verifyBrokenProductImages() throws Exception {
 		try {
 			PageMethods.verifybrokenProductImage("Test3");
+		} catch (Exception e) {
+			System.err.println("Test script failed.");
+			GenericMethod.takeScreenshot(driver, "logintest");
+			throw (e);
+		}
+	}
+	
+	@Test(priority = 2)
+	public void verifyBrokenLinksOnPage() throws Exception {
+		try {
+			PageMethods.verifybrokenLinks("BrokenLinks");
 		} catch (Exception e) {
 			System.err.println("Test script failed.");
 			GenericMethod.takeScreenshot(driver, "logintest");

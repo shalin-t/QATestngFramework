@@ -9,10 +9,10 @@ public class PageMethods {
 	public static void happyPathLogin(String sheetName) throws Exception {
 		System.out.println();
 		String username = cellval.getCellData(sheetName, "Username", ROWNUM);
-		System.out.println("username: "+username);
+		System.out.println("username: " + username);
 		PageUtils.enterUsername(username);
 		String password = cellval.getCellData(sheetName, "Password", ROWNUM);
-		System.out.println("password: "+password);
+		System.out.println("password: " + password);
 		PageUtils.enterPassword(password);
 		PageUtils.clicklogin();
 		PageUtils.verifyLoginSuccess();
@@ -21,12 +21,12 @@ public class PageMethods {
 	public static void errorLogin(String sheetName) throws Exception {
 		for (int RowNum = 2; RowNum <= cellval.getRowCount(sheetName); RowNum++) {
 			String username = cellval.getCellData(sheetName, "Username", RowNum);
-			System.out.println("username: "+username);
+			System.out.println("username: " + username);
 			PageUtils.enterUsername(username);
 			String password = cellval.getCellData(sheetName, "Password", RowNum);
-			System.out.println("password: "+password);
+			System.out.println("password: " + password);
 			PageUtils.enterPassword(password);
-			
+
 			PageUtils.clicklogin();
 			PageUtils.verifyLoginFailure();
 		}
@@ -40,7 +40,17 @@ public class PageMethods {
 		PageUtils.clicklogin();
 		PageUtils.verifyLoginSuccess();
 		PageUtils.verifyBrokenImages();
-		
+	}
+
+	public static void verifybrokenLinks(String sheetName) {
+//		String username = cellval.getCellData(sheetName, "Username", ROWNUM);
+//		PageUtils.enterUsername(username);
+//		String password = cellval.getCellData(sheetName, "Password", ROWNUM);
+//		PageUtils.enterPassword(password);
+//		PageUtils.clicklogin();
+//		PageUtils.verifyLoginSuccess();
+		PageUtils.verifyBrokenLinks(sheetName);
+
 	}
 
 }
