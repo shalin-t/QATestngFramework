@@ -42,13 +42,13 @@ public class PageMethods {
 		PageUtils.verifyBrokenImages();
 	}
 
-	public static void verifybrokenLinks(String sheetName) {
-//		String username = cellval.getCellData(sheetName, "Username", ROWNUM);
-//		PageUtils.enterUsername(username);
-//		String password = cellval.getCellData(sheetName, "Password", ROWNUM);
-//		PageUtils.enterPassword(password);
-//		PageUtils.clicklogin();
-//		PageUtils.verifyLoginSuccess();
+	public static void verifybrokenLinks(String sheetName) throws Exception {
+		String username = cellval.getCellData(sheetName, "Username", ROWNUM);
+		PageUtils.enterUsername(username);
+		String password = cellval.getCellData(sheetName, "Password", ROWNUM);
+		PageUtils.enterPassword(password);
+		PageUtils.clicklogin();
+		PageUtils.verifyLoginSuccess();
 		PageUtils.verifyBrokenLinks(sheetName);
 
 	}

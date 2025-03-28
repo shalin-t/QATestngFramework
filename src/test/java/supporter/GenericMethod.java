@@ -89,8 +89,6 @@ public class GenericMethod {
 			config.load(fs);
 			sBrowserName = config.getProperty("BrowserType");
 			url = config.getProperty("TestURL");
-//			sBrowserName = "Chrome";
-//			url = "https://www.saucedemo.com/";
 			System.out.println(url + "==> is the url used for testing.");
 			System.out.println("Testing on : " + sBrowserName + " Browser.");
 			if (sBrowserName == null || sBrowserName.isEmpty()) {
@@ -100,8 +98,7 @@ public class GenericMethod {
 			} else if (sBrowserName.toLowerCase().equals("chrome")) {
 				ChromeOptions options = new ChromeOptions();
 				options.addArguments("--disable-notifications");
-				options.setAcceptInsecureCerts(true); // Accept insecure certificates
-//				WebDriverManager.chromedriver().setup();
+				options.setAcceptInsecureCerts(true);
 				System.setProperty("webdriver.chrome.driver", "drivers\\chromedriver.exe");
 				driver = new ChromeDriver(options);
 			} else {

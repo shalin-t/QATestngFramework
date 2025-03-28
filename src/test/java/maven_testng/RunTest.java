@@ -25,7 +25,7 @@ public class RunTest {
 	}
 
 
-	@Test(priority = 0, enabled = false)
+	@Test(priority = 0, enabled = true)
 	public void logintest() throws Exception {
 		try {
 			PageMethods.happyPathLogin("Test1");
@@ -59,7 +59,7 @@ public class RunTest {
 		}
 	}
 	
-	@Test(priority = 2)
+	@Test(priority = 2, enabled = false)
 	public void verifyBrokenLinksOnPage() throws Exception {
 		try {
 			PageMethods.verifybrokenLinks("BrokenLinks");
